@@ -87,7 +87,8 @@ env.Replace( CXX = os.getenv('CXX', 'c++'),
 
 # Get compiler name
 compiler = 'unknown'
-compiler_string = subprocess.Popen([env['CC'],"-v"], stderr=subprocess.PIPE).communicate()[1]
+compiler_string_bytes = subprocess.Popen([env['CC'],"-v"], stderr=subprocess.PIPE).communicate()[1]
+compiler_string = compiler_string_bytes.decode()
 if 'clang' in compiler_string:
 	compiler = 'clang'
 if 'gcc' in compiler_string and 'clang' not in compiler_string:
@@ -119,7 +120,7 @@ if PROFILE=='1':
 sbms.Add_pthread(env)
 
 # Apply any platform/architecture specific settings
-sbms.ApplyPlatformSpecificSettings(env, arch)
+sbms.ApplyPlatformSpecificSettings(env, arch.decode())
 sbms.ApplyPlatformSpecificSettings(env, osname)
 
 # generate configuration header file
@@ -138,7 +139,7 @@ SConscript('scripts/SConscript', exports='env osname', duplicate=0)
 env.Alias('install', installdir)
 
 # Create setenv and make link to src if user explicitly specified "install" target
-build_targets = map(str,BUILD_TARGETS)
+build_targets = list(map(str,BUILD_TARGETS))
 if len(build_targets)>0:
 	if 'install' in build_targets:
 		import sbms_setenv

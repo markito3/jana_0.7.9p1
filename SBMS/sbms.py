@@ -308,17 +308,17 @@ def ApplyPlatformSpecificSettings(env, platform):
 
 	modname = "sbms_%s" % platform
 	if (int(env['SHOWBUILD']) > 0):
-		print "looking for %s.py" % modname
+		print("looking for %s.py" % modname)
 	try:
 		InitENV = getattr(__import__(modname), "InitENV")
 
 		# Run the InitENV function (if found)
 		if(InitENV != None):
-			print "sbms : Applying settings for platform %s" % platform
+			print("sbms : Applying settings for platform %s" % platform)
 			InitENV(env)
 
-	except ImportError,e:
-		if (int(env['SHOWBUILD']) > 0): print "%s" % e
+	except ImportError as e:
+		if (int(env['SHOWBUILD']) > 0): print("%s" % e)
 		pass
 
 
@@ -385,19 +385,20 @@ def TestCompile(env, name, includes, content, options):
 	ret = None
 	for opt in options:
 		myargs = opt.split()
-		if(env['SHOWBUILD'] >0):
-			print 'Test compiling %s:' % name
-			print args + myargs
+		showbuild_int = int(env['SHOWBUILD'])
+		if(showbuild_int >0):
+			print('Test compiling %s:' % name)
+			print(args + myargs)
 		res = subprocess.call(args + myargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		if res==0:
-			if(env['SHOWBUILD'] >0): print '---Succeeded'
+			if(showbuild_int >0): print('---Succeeded')
 			ret = myargs
 			break
 		else:
-			if(env['SHOWBUILD'] >1):
-				print '----Failed. Test file content was:------'
-				print subprocess.call(['cat', ifname])
-				print '----------------------------------------'
+			if(showbuild_int >1):
+				print('----Failed. Test file content was:------')
+				print(subprocess.call(['cat', ifname]))
+				print('----------------------------------------')
 				
 	
 	if os.path.exists(ifname): os.unlink(ifname);
@@ -442,7 +443,6 @@ def AddJANAInstalled(env):
 	if(jana_home != None):
 		JANA_CFLAGS = subprocess.Popen(["%s/bin/jana-config" % jana_home, "--cflags"], stdout=subprocess.PIPE).communicate()[0]
 		JANA_LINKFLAGS = subprocess.Popen(["%s/bin/jana-config" % jana_home, "--libs"], stdout=subprocess.PIPE).communicate()[0]
-
 		AddCompileFlags(env, JANA_CFLAGS)
 		AddLinkFlags(env, JANA_LINKFLAGS)
 
@@ -584,8 +584,8 @@ def AddROOT(env):
 
 		ROOT_CFLAGS = subprocess.Popen(["%s/bin/root-config" % rootsys, "--cflags"], stdout=subprocess.PIPE).communicate()[0]
 		ROOT_LINKFLAGS = subprocess.Popen(["%s/bin/root-config" % rootsys, "--glibs"], stdout=subprocess.PIPE).communicate()[0]
-		AddCompileFlags(env, ROOT_CFLAGS)
-		AddLinkFlags(env, ROOT_LINKFLAGS)
+		AddCompileFlags(env, ROOT_CFLAGS.decode())
+		AddLinkFlags(env, ROOT_LINKFLAGS.decode())
 		env.AppendUnique(LIBS = "Geom")
 		if os.getenv('LD_LIBRARY_PATH'  ) != None : env.Append(LD_LIBRARY_PATH   = os.environ['LD_LIBRARY_PATH'  ])
 		if os.getenv('DYLD_LIBRARY_PATH') != None : env.Append(DYLD_LIBRARY_PATH = os.environ['DYLD_LIBRARY_PATH'])
@@ -613,7 +613,7 @@ def AddROOT(env):
 		elif os.path.exists(rootcintpath):
 			bld = SCons.Script.Builder(action = rootcintaction, suffix='_Dict.cc', src_suffix='.h')
 		else:
-			print 'Neither rootcint nor rootcling exists. Unable to create ROOT dictionaries if any encountered.'
+			print('Neither rootcint nor rootcling exists. Unable to create ROOT dictionaries if any encountered.')
 			return
 
 		env.Append(BUILDERS = {'ROOTDict' : bld})
@@ -630,13 +630,13 @@ def AddROOT(env):
 		curpath = os.getcwd()
 		srcpath = env.Dir('.').srcnode().abspath
 		if(int(env['SHOWBUILD'])>1):
-			print "---- Scanning for headers to generate ROOT dictionaries in: %s" % srcpath
+			print("---- Scanning for headers to generate ROOT dictionaries in: %s" % srcpath)
 		os.chdir(srcpath)
 		for f in glob.glob('*.[h|hh|hpp]'):
 			if 'ClassDef' in open(f).read():
 				env.AppendUnique(ALL_SOURCES = env.ROOTDict(f))
 				if(int(env['SHOWBUILD'])>1):
-					print "       ROOT dictionary for %s" % f
+					print("       ROOT dictionary for %s" % f)
 		os.chdir(curpath)
 
 

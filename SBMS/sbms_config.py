@@ -55,7 +55,7 @@ def mk_jana_config_h(env):
 	ofdirname = '#src/.%s/JANA' % env['OSNAME']
 	ofdir = '%s' % env.Dir(ofdirname)
 	ofname = '%s/jana_config.h' % ofdir
-	print 'sbms : Making jana_config.h in %s' % ofdir
+	print('sbms : Making jana_config.h in %s' % ofdir)
 	
 	# ROOT
 	HAVE_ROOT = 0
@@ -91,13 +91,13 @@ def mk_jana_config_h(env):
 	env['HAVE_CCDB']   = HAVE_CCDB
 
 	# If showing build, print config. results
-	if(env['SHOWBUILD']>0):
-		print '--- Configuration results ----'
-		print '    HAVE_ROOT = %d' % HAVE_ROOT
-		print '  HAVE_XERCES = %d' % HAVE_XERCES
-		print '      XERCES3 = %d' % XERCES3
-		print '    HAVE_CCDB = %d' % HAVE_CCDB
-		print '------------------------------'
+	if(int(env['SHOWBUILD'])>0):
+		print('--- Configuration results ----')
+		print('    HAVE_ROOT = %d' % HAVE_ROOT)
+		print('  HAVE_XERCES = %d' % HAVE_XERCES)
+		print('      XERCES3 = %d' % XERCES3)
+		print('    HAVE_CCDB = %d' % HAVE_CCDB)
+		print('------------------------------')
 		
 	str = ''
 	
@@ -143,7 +143,7 @@ def mk_jana_config_script(env):
 	ofdirname = '#%s/bin' % env['OSNAME']
 	ofdir = '%s' % env.Dir(ofdirname)
 	ofname = '%s/jana-config' % ofdir
-	print 'sbms : Making jana-config in %s' % ofdir
+	print('sbms : Making jana-config in %s' % ofdir)
 
 	JANA_INSTALL_DIR = '%s' % env.Dir("#/%s" % env['OSNAME']).abspath
 	
